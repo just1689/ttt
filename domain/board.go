@@ -1,7 +1,5 @@
 package domain
 
-import "github.com/sirupsen/logrus"
-
 var locationMap = map[int][]int{
 	1: {1, 1},
 	2: {2, 1},
@@ -47,13 +45,11 @@ func (b *Board) Move(player *Player, location int) bool {
 	}
 	p, found := locationMap[location]
 	if !found {
-		logrus.Errorln("location not found in map", location)
 		return false
 	}
 	x := p[0]
 	y := p[1]
 	if b.Tiles[x][y] != 0 {
-		logrus.Errorln("tile already occupied")
 		return false
 	}
 	b.Tiles[x][y] = player.Number
