@@ -38,15 +38,11 @@ func HandleJoin(w http.ResponseWriter, r *http.Request) {
 	player := domain.NewPlayer(req.PlayerID, req.Secret, req.PlayerName)
 
 	//Processing
-	joined, gameID := domain.LocalInstance.JoinGame(req.GameID, player)
+	_, gameID := domain.LocalInstance.JoinGame(req.GameID, player)
 	domain.LocalInstance.AddPlayer(player)
 
 	//Output
-	if joined {
-		util.WriteResponse(w, GameIDResponse{GameID: gameID})
-	} else {
-		util.WriteResponse(w, GameIDResponse{GameID: ""})
-	}
+	util.WriteResponse(w, GameIDResponse{GameID: gameID})
 }
 
 func HandleMove(w http.ResponseWriter, r *http.Request) {

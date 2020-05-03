@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 var locationMap = map[int][]int{
 	1: {1, 1},
 	2: {2, 1},
@@ -17,14 +19,14 @@ type Board struct {
 	FirstRow         int
 	LastRow          int
 	PlayerNumberTurn int
+	WhoWentFirst     int
 }
 
 func NewBoard() *Board {
 	result := &Board{
-		Tiles:            make(map[int]map[int]int),
-		FirstRow:         1,
-		LastRow:          3,
-		PlayerNumberTurn: 1,
+		Tiles:    make(map[int]map[int]int),
+		FirstRow: 1,
+		LastRow:  3,
 	}
 	result.Reset()
 	return result
@@ -37,9 +39,20 @@ func (b *Board) Reset() {
 			b.Tiles[x][y] = 0
 		}
 	}
+
+	if b.WhoWentFirst == 1 {
+		b.WhoWentFirst = 2
+		b.PlayerNumberTurn = 2
+		return
+	}
+	b.WhoWentFirst = 1
+	b.PlayerNumberTurn = 1
 }
 
 func (b *Board) Move(player *Player, location int) bool {
+	if hasWinner, _ := b.CheckForWinner(); hasWinner {
+		return false
+	}
 	if player.Number != b.PlayerNumberTurn {
 		return false
 	}
@@ -60,6 +73,12 @@ func (b *Board) Move(player *Player, location int) bool {
 		b.PlayerNumberTurn = 1
 	}
 
+	if hasWinner, _ := b.CheckForWinner(); hasWinner {
+		go func() {
+			time.Sleep(5 * time.Second)
+			b.Reset()
+		}()
+	}
 	return true
 }
 
@@ -108,6 +127,10 @@ func (b *Board) checkForWinnerDiagonal() (hasWinner bool, winnerNumber int) {
 }
 
 func (b *Board) CheckForAvailableMoves() bool {
+	if hasWinner, _ := b.CheckForWinner(); hasWinner {
+		return false
+	}
+
 	for x := 1; x <= b.LastRow; x++ {
 		for y := 1; y <= b.LastRow; y++ {
 			if b.Tiles[x][y] == 0 {

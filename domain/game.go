@@ -24,18 +24,18 @@ func NewGame() *Game {
 
 func (g *Game) AddPlayer(player *Player) bool {
 	g.Lock()
-	player.Lock()
 	defer g.Unlock()
-	defer player.Unlock()
 	if len(g.Players) >= 2 {
 		return false
 	}
 	for i := 1; i <= 2; i++ {
 		_, found := g.Players[i]
 		if !found {
+			player.Lock()
 			g.Players[i] = player
 			player.Number = i
 			player.GameID = g.GameID
+			player.Unlock()
 			return true
 		}
 	}
@@ -45,15 +45,19 @@ func (g *Game) AddPlayer(player *Player) bool {
 func (g *Game) RemovePlayer(player *Player) {
 	g.Lock()
 	player.Lock()
-	defer g.Unlock()
-	defer player.Unlock()
 
 	delete(g.Players, player.Number)
 	player.Number = 0
 	player.GameID = ""
+
+	g.Unlock()
+	player.Unlock()
+
 }
 
 func (g *Game) Move(player *Player, location int) bool {
+	g.Lock()
+	defer g.Unlock()
 	if len(g.Players) != 2 {
 		return false
 	}
@@ -62,11 +66,16 @@ func (g *Game) Move(player *Player, location int) bool {
 }
 
 func (g *Game) Render() *GameRendered {
+	g.Lock()
+	defer g.Unlock()
 	result := &GameRendered{
 		Board:       g.Board.Render(),
 		Players:     make(map[string]string),
 		PlayersTurn: g.Board.PlayerNumberTurn,
+		CanMove:     g.Board.CheckForAvailableMoves(),
 	}
+	_, result.WinnerNumber = g.Board.CheckForWinner()
+
 	for number, player := range g.Players {
 		result.Players[strconv.Itoa(number)] = player.Name
 	}
@@ -74,7 +83,9 @@ func (g *Game) Render() *GameRendered {
 }
 
 type GameRendered struct {
-	Board       [][]int           `json:"board"`
-	Players     map[string]string `json:"players"`
-	PlayersTurn int               `json:"playersTurn"`
+	Board        [][]int           `json:"board"`
+	Players      map[string]string `json:"players"`
+	PlayersTurn  int               `json:"playersTurn"`
+	WinnerNumber int               `json:"winnerNumber"`
+	CanMove      bool              `json:"canMove"`
 }
