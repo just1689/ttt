@@ -50,6 +50,7 @@ func TestBoard_Render(t *testing.T) {
 }
 
 func TestBoard_MoveNegativeTurn(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move if its not your turn")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -60,6 +61,7 @@ func TestBoard_MoveNegativeTurn(t *testing.T) {
 	}
 }
 func TestBoard_MovePositiveTurn(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move if its not your turn")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -71,6 +73,7 @@ func TestBoard_MovePositiveTurn(t *testing.T) {
 }
 
 func TestBoard_MovePositiveTurnsTwoPlayers(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move if its not your turn")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -86,6 +89,7 @@ func TestBoard_MovePositiveTurnsTwoPlayers(t *testing.T) {
 }
 
 func TestBoard_MoveNegativeTurnsTwoPlayers(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move if its not your turn")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -105,6 +109,7 @@ func TestBoard_MoveNegativeTurnsTwoPlayers(t *testing.T) {
 }
 
 func TestBoard_MoveNegativeSameLocation(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move to a tile that is already occupied")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -117,25 +122,25 @@ func TestBoard_MoveNegativeSameLocation(t *testing.T) {
 }
 
 func TestBoard_CheckForAvailableMovesPositive(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move to a tile that is already occupied")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
-	lastPlayer := 2
-	for location := 1; location < 9; location++ {
-		if lastPlayer == 1 {
-			lastPlayer = 2
-		} else {
-			lastPlayer = 1
-		}
-		game.Board.Move(game.Players[lastPlayer], location)
+
+	game.Board.Tiles = map[int]map[int]int{
+		1: {1: 1, 2: 1, 3: 2},
+		2: {1: 2, 2: 2, 3: 1},
+		3: {1: 1, 2: 1, 3: 0},
 	}
+
 	available := game.Board.CheckForAvailableMoves()
 	if !available {
 		t.Error("Board with 8 plays should still have moves available")
 	}
 }
 func TestBoard_CheckForAvailableMovesNegative(t *testing.T) {
+	t.Parallel()
 	t.Log("you should not be able to move to a tile that is already occupied")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -156,6 +161,7 @@ func TestBoard_CheckForAvailableMovesNegative(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerPositiveHorizontal(t *testing.T) {
+	t.Parallel()
 	t.Log("three in a row of the same number should be a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -175,6 +181,7 @@ func TestBoard_CheckForWinnerPositiveHorizontal(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerNegativeHorizontal(t *testing.T) {
+	t.Parallel()
 	t.Log("three in a row of different numbers should not yield a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -194,6 +201,7 @@ func TestBoard_CheckForWinnerNegativeHorizontal(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerPositiveVertical(t *testing.T) {
+	t.Parallel()
 	t.Log("three in a row of the same number should be a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -213,6 +221,7 @@ func TestBoard_CheckForWinnerPositiveVertical(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerNegativeVertical(t *testing.T) {
+	t.Parallel()
 	t.Log("three in a row of the same number should be a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -232,6 +241,7 @@ func TestBoard_CheckForWinnerNegativeVertical(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerPositiveDiagonal(t *testing.T) {
+	t.Parallel()
 	t.Log("three in diagonally of the same number should be a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
@@ -251,6 +261,7 @@ func TestBoard_CheckForWinnerPositiveDiagonal(t *testing.T) {
 }
 
 func TestBoard_CheckForWinnerNegativeDiagonal(t *testing.T) {
+	t.Parallel()
 	t.Log("three in diagonally of the same number should be a winner")
 	game := NewGame()
 	game.AddPlayer(&Player{PlayerID: uuid.New().String()})
