@@ -73,7 +73,7 @@ func (b *Board) Move(player *Player, location int) bool {
 		b.PlayerNumberTurn = 1
 	}
 
-	if hasWinner, _ := b.CheckForWinner(); hasWinner {
+	if !b.CheckForAvailableMoves() {
 		go func() {
 			time.Sleep(5 * time.Second)
 			b.Reset()
